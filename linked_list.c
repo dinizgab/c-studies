@@ -23,6 +23,18 @@ Node* new_node(char* value) {
     return new_node;
 }
 
+int size() {
+    int size = 0;
+    Node* aux = head;
+
+    while (aux != NULL) {
+        size++;
+        aux = aux->next;
+    }
+
+    return size;
+}
+
 void insert_last(Node* new_node) {
     Node* aux = head;
 
@@ -36,6 +48,38 @@ void insert_last(Node* new_node) {
         aux->next = (Node*) malloc(sizeof(Node));
         new_node->prev = aux;
         aux->next = new_node;
+    }
+}
+
+// TODO - Add the insert at size() (Last index)
+void insert_at(Node* new_node, int i) {
+    if (i < 0 || i >= size()) {
+        printf("Error! Select a valid index!\n");
+        return;
+    }
+
+    Node* aux = head;
+    for (int j = 0; j < i; j++) {
+        aux = aux->next;
+    }
+
+    new_node->next = aux;
+    new_node->prev = aux->prev;
+
+    if (i == 0) {
+        head = new_node;
+    } else {
+        aux->prev->next = new_node;
+        aux->prev = new_node;
+    }
+}
+
+void print_list() {
+    Node* aux = head;
+
+    while (aux != NULL) {
+        printf("%s ", aux->value);
+        aux = aux->next;
     }
 }
 
@@ -53,31 +97,25 @@ void clear_list() {
         head = NULL;
     }
 }
- 
-int size() {
-    int size = 0;
-    Node* aux = head;
-
-    while (aux != NULL) {
-        size++;
-        aux = aux->next;
-    }
-
-    return size;
-}
 
 int main() {
     head = new_node("ESSA");
     printf("The size of the list is: %d\n", size()); // Should print 1
-    printf("%s\n", head->value);
 
     Node* new = new_node("EH");
     insert_last(new);
-
     printf("The size of the list is: %d\n", size()); // Should print 2
-    printf("%s\n", head->next->value);
 
+    Node* new2 = new_node("UMA");
+    insert_last(new2);
+
+    Node* new3 = new_node("LINKED");
+    insert_at(new3, 3);
+
+    printf("\nThe size of the list is: %d\n", size()); // Should print 0
+
+    print_list();
     clear_list();
-    printf("The size of the list is: %d\n", size()); // Should print 0
+    printf("\nThe size of the list is: %d\n", size()); // Should print 0
     return 0;
 }
