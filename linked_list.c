@@ -83,6 +83,34 @@ void print_list() {
     }
 }
 
+void delete_at(int i) {
+    Node* aux = head;
+    if (aux == NULL) {
+        printf("Error! The list is already empty\n");
+        return;
+    } else if (i < 0 || i >= size()) {
+        printf("Error! Select a valid index!\n");
+        return;
+    }
+
+    for (int j = 0; j < i; j++) {
+        aux = aux->next;
+    }
+    
+    if (i == size() - 1) {
+        // If i is the last index
+        aux->prev->next = aux->next;
+    } else if (i == 0) {
+        // If i is the first index
+        head = aux->next;
+        aux->next->prev = aux->prev;
+    } else {
+        // If i is an index in the middle of the list
+        aux->next->prev = aux->prev;
+        aux->prev->next = aux->next;
+    }
+}
+
 void clear_list() {
     Node* aux = head;
 
@@ -110,7 +138,10 @@ int main() {
     insert_last(new2);
 
     Node* new3 = new_node("LINKED");
-    insert_at(new3, 3);
+    insert_at(new3, 2);
+    print_list();
+
+    delete_at(2);
 
     printf("\nThe size of the list is: %d\n", size()); // Should print 0
 
