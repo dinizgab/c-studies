@@ -35,10 +35,23 @@ int size() {
     return size;
 }
 
+void insert_first(Node* new_node) {
+    Node* aux = head;
+
+    if (aux == NULL) {
+        aux = (Node*) malloc(sizeof(Node));
+        aux = new_node;
+    } else {
+        new_node->next = aux;
+        aux = new_node;
+    }
+}
+
 void insert_last(Node* new_node) {
     Node* aux = head;
 
     if (aux == NULL) {
+        aux = (Node*) malloc(sizeof(Node));
         aux = new_node;
     } else {
         while(aux->next != NULL) {
@@ -51,26 +64,81 @@ void insert_last(Node* new_node) {
     }
 }
 
-// TODO - Add the insert at size() (Last index)
 void insert_at(Node* new_node, int i) {
-    if (i < 0 || i >= size()) {
+    if (i < 0 || i > size()) {
         printf("Error! Select a valid index!\n");
         return;
     }
 
+    if (i == 0) {
+        insert_first(new_node);
+    } else if (i == size() - 1) {
+        insert_last(new_node);
+    } else {
+        Node* aux = head;
+        for (int j = 0; j < i; j++) {
+            aux = aux->next;
+        }
+
+        new_node->next = aux->next;
+        new_node->prev = aux;
+        aux->next->prev = new_node;
+        aux->next = new_node;
+    }
+}
+
+void delete_first() {
     Node* aux = head;
-    for (int j = 0; j < i; j++) {
+    if (aux == NULL) {
+        printf("Error! The list is already empty\n");
+        return;
+    }
+
+    Node* temp_aux = aux->next;
+    free(aux);
+    head = temp_aux;    
+}
+
+void delete_last() {
+    Node* aux = head;
+    if (aux == NULL) {
+        printf("Error! The list is already empty\n");
+        return;
+    }
+
+    while (aux->next != NULL) {
         aux = aux->next;
     }
 
-    new_node->next = aux;
-    new_node->prev = aux->prev;
+    aux->prev->next = NULL;
+    free(aux);
+}
 
+void delete_at(int i) {
+    Node* aux = head;
+    if (aux == NULL) {
+        printf("Error! The list is already empty\n");
+        return;
+    } else if (i < 0 || i > size() - 1) {
+        printf("Error! Select a valid index!\n");
+        return;
+    }
+
+    
     if (i == 0) {
-        head = new_node;
+        // If i is the first index
+        delete_first();
+    } else if (i == size() - 1) {
+        // If i is the last index
+        delete_last();
     } else {
-        aux->prev->next = new_node;
-        aux->prev = new_node;
+        // If i is an index in the middle of the list
+        for (int j = 0; j < i; j++) {
+            aux = aux->next;
+        }
+
+        aux->next->prev = aux->prev;
+        aux->prev->next = aux->next;
     }
 }
 
@@ -80,34 +148,6 @@ void print_list() {
     while (aux != NULL) {
         printf("%s ", aux->value);
         aux = aux->next;
-    }
-}
-
-void delete_at(int i) {
-    Node* aux = head;
-    if (aux == NULL) {
-        printf("Error! The list is already empty\n");
-        return;
-    } else if (i < 0 || i >= size()) {
-        printf("Error! Select a valid index!\n");
-        return;
-    }
-
-    for (int j = 0; j < i; j++) {
-        aux = aux->next;
-    }
-    
-    if (i == size() - 1) {
-        // If i is the last index
-        aux->prev->next = aux->next;
-    } else if (i == 0) {
-        // If i is the first index
-        head = aux->next;
-        aux->next->prev = aux->prev;
-    } else {
-        // If i is an index in the middle of the list
-        aux->next->prev = aux->prev;
-        aux->prev->next = aux->next;
     }
 }
 
@@ -141,9 +181,9 @@ int main() {
     insert_at(new3, 2);
     print_list();
 
-    delete_at(2);
+    delete_at(3);
 
-    printf("\nThe size of the list is: %d\n", size()); // Should print 0
+    printf("\nThe size of the list is: %d\n", size()); // Should print 4
 
     print_list();
     clear_list();
